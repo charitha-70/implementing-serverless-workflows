@@ -3,29 +3,18 @@ import boto3
 import subprocess 
 import os 
 import sys 
-import subprocess
-
+import subprocess 
+ 
 # pip install custom package to /tmp/ and add to path 
 subprocess.call('pip install inflect -t /tmp/ --no-cache-dir'.split(), stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL) 
-sys.path.insert(1, '/tmp/')  # Inserting to path
-
-import inflect
-
-def lambda_handler(event, context): 
-    inflect_engine = inflect.engine()  # Creating an instance of the inflect engine
-    
-    # Extracting 'final_number' from event, assuming it's present
+sys.path.insert(1, '/tmp/') 
+import inflect 
+def lambda_handler(event,context):
+    inflect_engine = inflect.engine() 
     number = inflect_engine.number_to_words(event['final_number']) 
-    
-    # Constructing message
-    message = {"DelMeMessage": "The StepFunctions Result is %r" % number} 
-    
-    # Initializing SNS client
+    message = {"DelMeMessage": "The StepFunctions Result is %r" %number} 
     client = boto3.client('sns') 
-    
-    # Publishing message to SNS topic
     response = client.publish( 
         TargetArn="SNS-TOPIC-ARN", 
         Message=json.dumps({'default': json.dumps(message)}), 
-        MessageStructure='json'
-    )
+        MessageStructure='json')
