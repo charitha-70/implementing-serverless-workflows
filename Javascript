@@ -1,0 +1,46 @@
+{ 
+  "Comment": "A simple Step Functions state machine", 
+  "StartAt": "AddNumbers", 
+  "States": { 
+    "AddNumbers": { 
+      "Type": "Task", 
+      "Resource": "ARN:OF:add-numbers", 
+      "Next": "AnswerState"
+    }, 
+    "AnswerState": { 
+      "Type" : "Choice", 
+      "Choices": [ 
+        { 
+          "Variable": "$.number", 
+          "NumericGreaterThan": 500, 
+          "Next": "GreaterThan"
+        }, 
+        { 
+          "Variable": "$.number", 
+          "NumericLessThan": 500, 
+          "Next": "LessThan"
+        } 
+      ], 
+      "Default": "EqualTo"
+    }, 
+    "GreaterThan": { 
+      "Type" : "Task", 
+      "Resource": "ARN:OF:greater-than-lambda", 
+      "Next": "FinalState"
+    }, 
+    "LessThan": { 
+      "Type" : "Task", 
+      "Resource": "ARN:OF:less-than-lambda", 
+      "Next": "FinalState"
+    }, 
+    "EqualTo": { 
+      "Type": "FailState", 
+      "Cause": "No Matches!"
+    }, 
+    "FinalState": { 
+      "Type": "Task", 
+      "Resource": "ARN:OF:final-state-lambda", 
+      "End": true
+    } 
+  } 
+}
